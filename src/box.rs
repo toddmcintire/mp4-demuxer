@@ -43,39 +43,39 @@ pub fn type_read(fil: &mut File, offset: u64) -> Result<String, std::io::Error> 
 }
 
 ///test function to read ftyp box
-pub fn box_read(fil: &mut File, size: u32, offset: u64) -> FYTPBox{
-    let _ = fil.seek(SeekFrom::Start(offset));
+// pub fn box_read(fil: &mut File, size: u32, offset: u64) -> FYTPBox{
+//     let _ = fil.seek(SeekFrom::Start(offset));
 
-    let box_casted_size = size as usize;
-    let mut box_buf = vec![0u8; box_casted_size];
-    fil.read_exact(&mut box_buf).expect("buf incorrect");
+//     let box_casted_size = size as usize;
+//     let mut box_buf = vec![0u8; box_casted_size];
+//     fil.read_exact(&mut box_buf).expect("buf incorrect");
 
-    //println!("{:?}", box_buf);
+//     //println!("{:?}", box_buf);
 
-    //take 4 for major brand
-    let brand_buf = box_buf[8..12].to_vec();
-    let major_brand = String::from_utf8(brand_buf).expect("not vec of u8");
-    println!("{:?}", major_brand);
+//     //take 4 for major brand
+//     let brand_buf = box_buf[8..12].to_vec();
+//     let major_brand = String::from_utf8(brand_buf).expect("not vec of u8");
+//     println!("{:?}", major_brand);
 
-    //take 4 for minor version
-    let minor_buf = box_buf[12..16].to_vec();
-    let minor = u32::from_be_bytes(minor_buf.try_into().expect("box length incorrect"));
-    println!("{:?}", minor);
+//     //take 4 for minor version
+//     let minor_buf = box_buf[12..16].to_vec();
+//     let minor = u32::from_be_bytes(minor_buf.try_into().expect("box length incorrect"));
+//     println!("{:?}", minor);
 
-    //rest for brands (4 bytes each)
-    let brands_buf = box_buf[16..].to_vec();
-    let mut comppatible_brands_buf: Vec<String> = vec![];
+//     //rest for brands (4 bytes each)
+//     let brands_buf = box_buf[16..].to_vec();
+//     let mut comppatible_brands_buf: Vec<String> = vec![];
 
-    for chunk in brands_buf.chunks(4) {
-        println!("{chunk:?}");
-        let chunked = String::from_utf8(chunk.to_vec());
-        println!("{chunked:?}");
-        comppatible_brands_buf.push(chunked.expect("chunk not loaded"));
+//     for chunk in brands_buf.chunks(4) {
+//         println!("{chunk:?}");
+//         let chunked = String::from_utf8(chunk.to_vec());
+//         println!("{chunked:?}");
+//         comppatible_brands_buf.push(chunked.expect("chunk not loaded"));
 
-    }
+//     }
 
-    FYTPBox {size,r#type, major_brand, minor_version: minor, comppatible_brands: comppatible_brands_buf }
-}
+//     FYTPBox {size,r#type, major_brand, minor_version: minor, comppatible_brands: comppatible_brands_buf }
+// }
 
 pub fn box_count(fil: &mut File) -> Result<u64, std::io::Error> {
     //iterate through boxes getting total count.
@@ -103,15 +103,18 @@ enum ParsedBox {
 }
 
 ///parses a box and returns box struct
-fn box_parser(fil: &mut File, size: u32, r#type: String) -> ParsedBox{
+fn box_parser(size: u32, r#type: String) -> ParsedBox{
 
     //ftyp
     if true {
-        let mut ftyp: FYTPBox;
-        ftyp.size = size;
-        ftyp.r#type = r#type;
-        ftyp.major_brand = String::new();
-        
+        let mut ftyp = FYTPBox { 
+            size,
+            r#type, 
+            major_brand: String::new(), 
+            minor_version: 0, 
+            comppatible_brands: vec![String::new()] 
+        };
+
         return ParsedBox::FYTP(ftyp)
     } else {
         return ParsedBox::Unknown
