@@ -3,6 +3,8 @@ use std::io::{Read, Seek, SeekFrom};
 
 #[derive(Debug)]
 pub struct FYTPBox {
+    size: u32,
+    r#type: String,
     major_brand: String,
     minor_version: u32,
     comppatible_brands: Vec<String>
@@ -40,6 +42,7 @@ pub fn type_read(fil: &mut File, offset: u64) -> Result<String, std::io::Error> 
     Ok(box_type)
 }
 
+///test function to read ftyp box
 pub fn box_read(fil: &mut File, size: u32, offset: u64) -> FYTPBox{
     let _ = fil.seek(SeekFrom::Start(offset));
 
@@ -71,7 +74,7 @@ pub fn box_read(fil: &mut File, size: u32, offset: u64) -> FYTPBox{
 
     }
 
-    FYTPBox { major_brand, minor_version: minor, comppatible_brands: comppatible_brands_buf }
+    FYTPBox {size,r#type, major_brand, minor_version: minor, comppatible_brands: comppatible_brands_buf }
 }
 
 pub fn box_count(fil: &mut File) -> Result<u64, std::io::Error> {
@@ -92,4 +95,27 @@ pub fn box_count(fil: &mut File) -> Result<u64, std::io::Error> {
     }
     
     Ok(count)
+}
+
+enum ParsedBox {
+    FYTP(FYTPBox),
+    Unknown
+}
+
+///parses a box and returns box struct
+fn box_parser(fil: &mut File, size: u32, r#type: String) -> ParsedBox{
+
+    //ftyp
+    if true {
+        let mut ftyp: FYTPBox;
+        ftyp.size = size;
+        ftyp.r#type = r#type;
+        ftyp.major_brand = String::new();
+        
+        return ParsedBox::FYTP(ftyp)
+    } else {
+        return ParsedBox::Unknown
+    }
+    
+
 }
